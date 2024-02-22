@@ -17,6 +17,11 @@ public class VehicleControl : MonoBehaviour
     {
         public int segment;
         public int waypoint;
+        public override string ToString()
+        {
+            string ret = $"Target : {segment} / {waypoint}";
+            return ret;
+        }
     }
     //자동차의 상태.
     public enum Status
@@ -157,7 +162,7 @@ public class VehicleControl : MonoBehaviour
                 currentTarget.waypoint = 0;
             }
             //다음 타겟의 웨이포인트도 찾기.
-            nextTarget.waypoint = currentTarget.waypoint +1;
+            nextTarget.waypoint = currentTarget.waypoint + 1; //<--요거 고쳐주세요. 버그.
             if (nextTarget.waypoint >= trafficHeadquarter.segments[currentTarget.segment].Waypoints.Count)
             {
                 nextTarget.waypoint = 0;
@@ -248,7 +253,11 @@ public class VehicleControl : MonoBehaviour
         float brake = 0f;
         float steering = 0f;
         wheelDriveControl.maxSpeed = initMaxSpeed;
-
+        if (currentTarget.segment >= trafficHeadquarter.segments.Count ||
+            currentTarget.waypoint >= trafficHeadquarter.segments[currentTarget.segment].Waypoints.Count)
+        {
+            Debug.LogError(currentTarget.ToString());
+        }
         Transform targetTransform = trafficHeadquarter.segments[currentTarget.segment].Waypoints[currentTarget.waypoint].transform;
         Transform nextTargetTransform = trafficHeadquarter.segments[nextTarget.segment].Waypoints[nextTarget.waypoint].transform;
         Vector3 nextVector3 = nextTargetTransform.position - targetTransform.position;
@@ -371,7 +380,5 @@ public class VehicleControl : MonoBehaviour
         }
         //차량 이동.
         wheelDriveControl.Move(acc, steering, brake);
-
     }
-
 }

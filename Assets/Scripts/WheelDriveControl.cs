@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using Unity.VisualScripting;
+
 [RequireComponent(typeof(Rigidbody))]
 public class WheelDriveControl : MonoBehaviour
 {
@@ -61,26 +63,26 @@ public class WheelDriveControl : MonoBehaviour
             {
                 var wheelshape = Instantiate(leftWheelShape);
                 wheelshape.transform.parent = wheel.transform;
-                wheelshape.transform.localPosition = Vector3.zero;
+                wheelshape.transform.localPosition = Vector3.zero;//이거.
             }
             else if (rightWheelShape != null && wheel.transform.localPosition.x > 0)
             {
                 var wheelshape = Instantiate(rightWheelShape);
                 wheelshape.transform.parent = wheel.transform;
-                wheelshape.transform.localPosition = Vector3.zero;
+                wheelshape.transform.localPosition = Vector3.zero;//이거.
             }
-            wheel.ConfigureVehicleSubsteps(10,1,1);
+            wheel.ConfigureVehicleSubsteps(10, 1, 1);
         }
-        
+
     }
     private void Awake()
     {
-        Init();    
-    }
-    private void OnEnable()
-    {
         Init();
     }
+    /*private void OnEnable()
+    {
+        Init();
+    }*/
     //현재 속도 단위의 맞추어 현재 속도를 얻어옵니다.
     public float GetSpeedMS(float speed)
     {
@@ -159,5 +161,4 @@ public class WheelDriveControl : MonoBehaviour
             rb.AddForce(-transform.up * downForce * rb.velocity.magnitude);
         }
     }
-
 }
