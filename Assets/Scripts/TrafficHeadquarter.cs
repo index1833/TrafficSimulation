@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -50,6 +51,7 @@ public class TrafficHeadquarter : MonoBehaviour
     }
 
     //data loading -> 속성들 정의
+    [Serializable] // 순서가 데이터이기때문에 순서 바꾸기 X
     public class EmergencyData
     {
         public int ID = -1;
@@ -78,6 +80,7 @@ public class TrafficHeadquarter : MonoBehaviour
         dataLoader = GetComponentInChildren<SpreadSheetLoader>();
         stateLabel = GameObject.FindWithTag("TrafficLabel").GetComponent<TMPro.TextMeshProUGUI>();
         // 일정 주기로 데이터 로딩을 시킬껀데, 너무 자주 빈번하게 부르면 URL막힘
+        InvokeRepeating("CallLoaderAndCheck", 5f, 5f);
 
     }
     private void CallLoaderAndCheck()
@@ -96,6 +99,27 @@ public class TrafficHeadquarter : MonoBehaviour
             string[] datas = oneRow.Split('\t'); // \t탭키 
             EmergencyData data = new EmergencyData(datas[0], datas[1]);
             trafficData.datas.Add(data);
+        }
+        //data 검사합니다. 응급상황 발생시 세팅하기
+        CheckData();
+    }
+    private void CheckData()
+    {
+        for (int i = 0; i < trafficData.datas.Count; i++)
+        {
+            EmergencyData data = trafficData.datas[i];
+            if (intersections.Count <= i || intersections[i] == null)
+            {
+                return;
+            }
+            if (data.IsEmergency)
+            {
+                intersections[data.ID].IntersectionType = IntersectionType.EMERGENCY;
+            }
+            else
+            {
+                intersections[data.ID].IntersectionType = IntersectionType.TRAFFIC_LIGHT;
+            }
         }
     }
 }
