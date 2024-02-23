@@ -6,6 +6,7 @@ TagManager:
   tags:
   - AutonomousVehicle
   - Waypoint
+  - TrafficLabel
   layers:
   - Default
   - TransparentFX
