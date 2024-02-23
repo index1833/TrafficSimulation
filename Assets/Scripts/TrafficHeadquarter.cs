@@ -49,5 +49,53 @@ public class TrafficHeadquarter : MonoBehaviour
         return waypoints;
     }
 
+    //data loading -> 속성들 정의
+    public class EmergencyData
+    {
+        public int ID = -1;
+        public bool IsEmergency = false;
+        public EmergencyData(string id, string emergency)
+        {
+            ID = int.Parse(id);
+            IsEmergency = emergency.Contains("1");
+        }
+    }
+    public class TraaficData
+    {   //tsv 같은 형식으로 데이터 넣음
+        public List<EmergencyData> datas = new List<EmergencyData>();
+    }
+    
+    //data 출력한 UI 라벨
+    public TMPro.TextMeshProUGUI stateLabel;
+    //구글 스프레드 시트 읽어올 로더
+    public SpreadSheetLoader dataLoader;
+    //읽어온 데이터 클래스
+    private TraaficData trafficData;
 
+    private void Start()
+    {
+        // 링크를 따로 안걸어도 시작하자마자 바로 연결됌
+        dataLoader = GetComponentInChildren<SpreadSheetLoader>();
+        stateLabel = GameObject.FindWithTag("TrafficLabel").GetComponent<TMPro.TextMeshProUGUI>();
+        // 일정 주기로 데이터 로딩을 시킬껀데, 너무 자주 빈번하게 부르면 URL막힘
+
+    }
+    private void CallLoaderAndCheck()
+    {
+        string loadedData = dataLoader.StartLoader();
+        stateLabel.text = "Traffic Status\n " + loadedData;
+        if (string.IsNullOrEmpty(loadedData))
+        {
+            return;
+        }
+        //data -> Class 담음
+        trafficData = new TraaficData();
+        string[] AllRow = loadedData.Split('\n');
+        foreach (string oneRow in AllRow)
+        {
+            string[] datas = oneRow.Split('\t'); // \t탭키 
+            EmergencyData data = new EmergencyData(datas[0], datas[1]);
+            trafficData.datas.Add(data);
+        }
+    }
 }
